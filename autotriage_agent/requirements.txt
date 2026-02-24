@@ -1,0 +1,4 @@
+requests
+prometheus-api-client
+opentelemetry-api
+opentelemetry-sdk

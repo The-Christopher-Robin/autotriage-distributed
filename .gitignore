@@ -1,0 +1,17 @@
+# Do not commit real .env or rendered config with machine-specific IPs
+deploy/vm1/.env
+deploy/vm2/.env
+deploy/vm1/prometheus.yml
+# VirtualBox / VMs (never commit)
+VM/
+*.vbox
+*.vbox-prev
+VBoxHardening.log
+*.vdi
+*.vmdk
+*.ova
+*.ovf
+
+# OS noise
+.DS_Store
+Thumbs.db

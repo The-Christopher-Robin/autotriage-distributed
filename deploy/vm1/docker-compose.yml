@@ -1,0 +1,50 @@
+# VM1 (node-a): gateway, observability, autotriage_agent
+# Set VM2_IP in .env (copy from .env.example).
+version: "3.8"
+services:
+  gateway:
+    build: ../../services/gateway
+    env_file: [.env]
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - ORDERS_URL=http://${VM2_IP}:8000
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otel-collector.yml"]
+    volumes:
+      - ./otel-collector.yml:/etc/otel-collector.yml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      # Rendered by render_prometheus.sh from prometheus.yml.tmpl
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+  autotriage_agent:
+    build: ../../autotriage_agent
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - JAEGER_URL=http://jaeger:16686
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - LEADER_ELECTION=true

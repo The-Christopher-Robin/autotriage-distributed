@@ -1,0 +1,57 @@
+# VM2 (node-b): orders, payments, postgres, node_exporter, autotriage_agent
+# Set VM1_IP in .env (copy from .env.example).
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=autotriage
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  orders:
+    build: ../../services/orders
+    env_file: [.env]
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - PAYMENTS_URL=http://payments:8001
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/autotriage
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${VM1_IP}:4318
+    depends_on:
+      postgres:
+        condition: service_healthy
+  payments:
+    build: ../../services/payments
+    env_file: [.env]
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/autotriage
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${VM1_IP}:4318
+    depends_on:
+      postgres:
+        condition: service_healthy
+  node_exporter:
+    image: prom/node-exporter:latest
+    ports:
+      - "9100:9100"
+  autotriage_agent:
+    build: ../../autotriage_agent
+    env_file: [.env]
+    environment:
+      - PROMETHEUS_URL=http://${VM1_IP}:9090
+      - JAEGER_URL=http://${VM1_IP}:16686
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${VM1_IP}:4318
+      - LEADER_ELECTION=true
+
+volumes:
+  pgdata:
