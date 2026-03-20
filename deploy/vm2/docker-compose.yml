@@ -4,6 +4,8 @@ version: "3.8"
 services:
   postgres:
     image: postgres:16
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -16,7 +18,9 @@ services:
       timeout: 5s
       retries: 5
   orders:
-    build: ../../services/orders
+    build:
+      context: ../..
+      dockerfile: services/orders/Dockerfile
     env_file: [.env]
     ports:
       - "8000:8000"
@@ -29,7 +33,9 @@ services:
       postgres:
         condition: service_healthy
   payments:
-    build: ../../services/payments
+    build:
+      context: ../..
+      dockerfile: services/payments/Dockerfile
     env_file: [.env]
     ports:
       - "8001:8001"
@@ -37,6 +43,7 @@ services:
       - PORT=8001
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/autotriage
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://${VM1_IP}:4318
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,6 +59,10 @@ services:
       - JAEGER_URL=http://${VM1_IP}:16686
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://${VM1_IP}:4318
       - LEADER_ELECTION=true
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/autotriage
+      - PAYMENTS_ADMIN_URL=http://payments:8001
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - AGENT_INTERVAL_SEC=20
 
 volumes:
   pgdata:

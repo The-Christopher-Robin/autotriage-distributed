@@ -3,7 +3,11 @@ import os
 import requests
 from flask import Flask, request, jsonify
 
+from common.instrumentation import instrument_flask_app
+
 app = Flask(__name__)
+instrument_flask_app(app, "gateway")
+
 ORDERS_URL = os.environ.get("ORDERS_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", 10))
 

@@ -1,3 +1,4 @@
-"""Shared metrics helpers for services."""
-# Metrics setup (Prometheus/client lib)
-# Use for request counts, latency histograms, etc.
+"""Prometheus metrics are registered via instrumentation.instrument_flask_app."""
+from common.instrumentation import instrument_flask_app
+
+__all__ = ["instrument_flask_app"]

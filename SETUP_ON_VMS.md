@@ -23,6 +23,7 @@ docker compose version 2>/dev/null || sudo apt install -y docker-compose-plugin 
 cd deploy/vm2
 cp .env.example .env
 sed -i 's/VM1_IP=.*/VM1_IP=192.168.56.101/' .env
+# Set ADMIN_TOKEN in .env to match VM1 (same value on both VMs).
 cd ../..
 chmod +x deploy/vm1/render_prometheus.sh scripts/vm1/smoke_vm1.sh scripts/vm2/smoke_vm2.sh
 
@@ -51,6 +52,7 @@ docker compose version 2>/dev/null || sudo apt install -y docker-compose-plugin 
 cd deploy/vm1
 cp .env.example .env
 sed -i 's/VM2_IP=.*/VM2_IP=192.168.56.102/' .env
+# Set ADMIN_TOKEN in .env to match VM2 (same value on both VMs).
 ./render_prometheus.sh
 cd ../..
 chmod +x deploy/vm1/render_prometheus.sh scripts/vm1/smoke_vm1.sh scripts/vm2/smoke_vm2.sh

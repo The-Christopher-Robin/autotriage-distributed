@@ -1,5 +1,7 @@
 flask>=2.0
-opentelemetry-api
-opentelemetry-sdk
-opentelemetry-exporter-otlp
 requests
+prometheus-flask-exporter
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-flask
+opentelemetry-instrumentation-requests

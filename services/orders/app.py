@@ -3,7 +3,11 @@ import os
 import requests
 from flask import Flask, request, jsonify
 
+from common.instrumentation import instrument_flask_app
+
 app = Flask(__name__)
+instrument_flask_app(app, "orders")
+
 PAYMENTS_URL = os.environ.get("PAYMENTS_URL", "http://localhost:8001")
 REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", 10))
 
@@ -43,5 +47,5 @@ def orders():
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8001))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)

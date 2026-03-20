@@ -1,4 +1,2 @@
 requests
-prometheus-api-client
-opentelemetry-api
-opentelemetry-sdk
+psycopg2-binary
