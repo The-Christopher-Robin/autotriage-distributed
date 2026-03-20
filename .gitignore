@@ -12,6 +12,9 @@ VBoxHardening.log
 *.ova
 *.ovf
 
+# Presentation materials (do not commit)
+Presentation/
+
 # OS noise
 .DS_Store
 Thumbs.db
