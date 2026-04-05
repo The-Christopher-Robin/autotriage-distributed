@@ -1,2 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 requests
 psycopg2-binary
+torch
+numpy

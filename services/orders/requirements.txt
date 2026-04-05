@@ -1,5 +1,6 @@
 flask>=2.0
 requests
+psycopg2-binary
 prometheus-flask-exporter
 opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http

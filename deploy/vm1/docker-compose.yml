@@ -1,4 +1,4 @@
-# VM1 (node-a): gateway, observability, autotriage_agent
+# VM1 (node-a): gateway, observability, autotriage_agent, dashboard
 # Set VM2_IP in .env (copy from .env.example).
 version: "3.8"
 services:
@@ -54,3 +54,16 @@ services:
       - PAYMENTS_ADMIN_URL=http://${VM2_IP}:8001
       - ADMIN_TOKEN=${ADMIN_TOKEN}
       - AGENT_INTERVAL_SEC=20
+      - ALERT_DB_ENABLED=true
+      - ALERT_LOG_FILE=/tmp/autotriage_alerts.jsonl
+  dashboard:
+    build: ../../dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@${VM2_IP}:5432/autotriage
+      - PROMETHEUS_URL=http://prometheus:9090
+      - GATEWAY_URL=http://gateway:8000
+      - ORDERS_URL=http://${VM2_IP}:8000
+      - PAYMENTS_URL=http://${VM2_IP}:8001
+      - DASHBOARD_REFRESH_SEC=15
